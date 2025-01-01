@@ -12,6 +12,7 @@ import {
 import { COLORS, FONT_SIZES, SPACING } from "./styles/constants";
 import { lightTheme, darkTheme } from "./styles/theme";
 import TaskList from "./components/TaskList";
+import Toast from "react-native-toast-message";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -39,6 +40,7 @@ export default function App() {
         style={styles.toggleButton}
       />
       <TaskList theme={theme}/>
+      <Toast/>
     </SafeAreaView>
   );
 }

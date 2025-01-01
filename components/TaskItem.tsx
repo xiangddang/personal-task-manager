@@ -33,7 +33,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, theme }) => {
 
 const styles = StyleSheet.create({
   taskItem: {
-    padding: SPACING.medium,
+    padding: SPACING.small,
     marginBottom: SPACING.small,
     borderRadius: 12,
     shadowColor: "#000",

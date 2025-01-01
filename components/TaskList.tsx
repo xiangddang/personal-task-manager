@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, StyleSheet, FlatList, TextInput, TouchableOpacity, Modal, TouchableWithoutFeedback, Keyboard } from "react-native";
+import Toast from "react-native-toast-message";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import { COLORS, FONT_SIZES, SPACING } from "../styles/constants";
 import { Task } from "../types/Task";
@@ -41,6 +42,11 @@ const TaskList: React.FC<TaskListProps> = ({theme}) => {
 
   const addTask = () => {
     if (!newTitle || !newDescription) {
+      Toast.show({
+        type: "error",
+        text1: "Missing Details",
+        text2: "Please enter title and description for the task.",
+      });
       return;
     }
 
@@ -53,6 +59,12 @@ const TaskList: React.FC<TaskListProps> = ({theme}) => {
 
     setTasks([...tasks, newTask]);
     closeAddModal();
+
+    Toast.show({
+      type: "success",
+      text1: "Task Added",
+      text2: "Your task has been added successfully!",
+    });
   }
 
   return (
@@ -69,6 +81,7 @@ const TaskList: React.FC<TaskListProps> = ({theme}) => {
             No tasks available
           </Text>
         }
+        contentContainerStyle={{ paddingBottom: 80}}
       />
       {/* Add Task Button */}
       <TouchableOpacity
