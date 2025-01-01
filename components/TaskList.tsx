@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, StyleSheet, FlatList, TextInput, TouchableOpacity, Modal, TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import Toast from "react-native-toast-message";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import { COLORS, FONT_SIZES, SPACING } from "../styles/constants";
@@ -15,13 +26,13 @@ interface TaskListProps {
   theme: typeof lightTheme | typeof darkTheme;
 }
 
-const TaskList: React.FC<TaskListProps> = ({theme}) => {
-
+const TaskList: React.FC<TaskListProps> = ({ theme }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
+  // initial load of tasks from storage or mock data
   useEffect(() => {
     const fetchTasks = async () => {
       const storedTasks = await loadFromStorage(STORAGE_KEY);
@@ -30,6 +41,7 @@ const TaskList: React.FC<TaskListProps> = ({theme}) => {
     fetchTasks();
   }, []);
 
+  // save tasks to storage whenever tasks change
   useEffect(() => {
     saveToStorage(STORAGE_KEY, tasks);
   }, [tasks]);
@@ -38,9 +50,10 @@ const TaskList: React.FC<TaskListProps> = ({theme}) => {
     setModalVisible(false);
     setNewTitle("");
     setNewDescription("");
-  }
+  };
 
   const addTask = () => {
+    // Validate the input fields
     if (!newTitle || !newDescription) {
       Toast.show({
         type: "error",
@@ -65,23 +78,21 @@ const TaskList: React.FC<TaskListProps> = ({theme}) => {
       text1: "Task Added",
       text2: "Your task has been added successfully!",
     });
-  }
+  };
 
   return (
     <View style={styles.container}>
-      
-    
-    <FlatList
+      {/* Task List */}
+      <FlatList
         data={tasks}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (<TaskItem task={item} theme={theme} />
-        )}
+        renderItem={({ item }) => <TaskItem task={item} theme={theme} />}
         ListEmptyComponent={
           <Text style={[styles.emptyList, { color: theme.text }]}>
             No tasks available
           </Text>
         }
-        contentContainerStyle={{ paddingBottom: 80}}
+        contentContainerStyle={{ paddingBottom: 80 }}
       />
       {/* Add Task Button */}
       <TouchableOpacity
@@ -98,42 +109,56 @@ const TaskList: React.FC<TaskListProps> = ({theme}) => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-
-        <TouchableWithoutFeedback onPress={() => {closeAddModal(), Keyboard.dismiss}}>
-        <View style={styles.modalContainer}>
-          <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Add a New Task</Text>
-            <TextInput
-              style={[styles.input, { color: theme.text }]}
-              placeholder="Task Title"
-              placeholderTextColor="#aaa"
-              value={newTitle}
-              onChangeText={setNewTitle}
-            />
-            <TextInput
-              style={[styles.input, { color: theme.text }]}
-              placeholder="Task Description"
-              placeholderTextColor="#aaa"
-              value={newDescription}
-              onChangeText={setNewDescription}
-            />
-            <View style={styles.buttonRow}>
-              <Button title="Add" onPress={addTask} />
-              <Button title="Cancel" color={COLORS.pending} onPress={() => closeAddModal()} />
+        <TouchableWithoutFeedback
+          onPress={() => {
+            closeAddModal(), Keyboard.dismiss;
+          }}
+        >
+          <View style={styles.modalContainer}>
+            <View
+              style={[
+                styles.modalContent,
+                { backgroundColor: theme.cardBackground },
+              ]}
+            >
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                Add a New Task
+              </Text>
+              <TextInput
+                style={[styles.input, { color: theme.text }]}
+                placeholder="Task Title"
+                placeholderTextColor="#aaa"
+                value={newTitle}
+                onChangeText={setNewTitle}
+              />
+              <TextInput
+                style={[styles.input, { color: theme.text }]}
+                placeholder="Task Description"
+                placeholderTextColor="#aaa"
+                value={newDescription}
+                onChangeText={setNewDescription}
+              />
+              <View style={styles.buttonRow}>
+                <Button title="Add" onPress={addTask} />
+                <Button
+                  title="Cancel"
+                  color={COLORS.pending}
+                  onPress={() => closeAddModal()}
+                />
+              </View>
             </View>
           </View>
-        </View>
         </TouchableWithoutFeedback>
       </Modal>
-      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 16,
-    paddingBottom: 16,
+    paddingTop: SPACING.large,
+    paddingBottom: SPACING.large,
   },
   emptyList: {
     fontSize: FONT_SIZES.emptyList,

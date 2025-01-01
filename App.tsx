@@ -19,6 +19,7 @@ const { height: screenHeight } = Dimensions.get("window");
 const dynamicPaddingTop = screenHeight * 0.08;
 
 export default function App() {
+  // change the UI based on the theme chosen by the user
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const toggleTheme = () => {
