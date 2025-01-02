@@ -21,6 +21,7 @@ import { lightTheme, darkTheme } from "../styles/theme";
 import TaskItem from "./TaskItem";
 
 const STORAGE_KEY = "@tasks-list";
+const MAXID_KEY = "@tasks-maxid";
 
 interface TaskListProps {
   theme: typeof lightTheme | typeof darkTheme;
@@ -28,6 +29,7 @@ interface TaskListProps {
 
 const TaskList: React.FC<TaskListProps> = ({ theme }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [maxId, setMaxId] = useState<number>(0);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -36,7 +38,16 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
   useEffect(() => {
     const fetchTasks = async () => {
       const storedTasks = await loadFromStorage(STORAGE_KEY);
-      setTasks(storedTasks || mockTasks);
+      if (storedTasks && storedTasks.length > 0) {
+        setTasks(storedTasks);
+        const storedMaxId = Math.max(...storedTasks.map((task: Task) => task.id));
+        setMaxId(storedMaxId);
+      } else {
+        setTasks(mockTasks);
+        setMaxId(mockTasks.length);
+        await saveToStorage(STORAGE_KEY, mockTasks);
+      }
+
     };
     fetchTasks();
   }, []);
@@ -45,6 +56,10 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
   useEffect(() => {
     saveToStorage(STORAGE_KEY, tasks);
   }, [tasks]);
+
+  useEffect(() => {
+    saveToStorage(MAXID_KEY, maxId);
+  }, [maxId]);
 
   const closeAddModal = () => {
     setModalVisible(false);
@@ -64,13 +79,14 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
     }
 
     const newTask: Task = {
-      id: tasks.length + 1,
+      id: maxId + 1,
       title: newTitle,
       description: newDescription,
       status: TaskStatus.Pending,
     };
 
     setTasks([...tasks, newTask]);
+    setMaxId(maxId + 1);
     closeAddModal();
 
     Toast.show({
@@ -80,13 +96,23 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
     });
   };
 
+  const deleteTask = (id: number) => {
+    console.log("deleteTask", id);
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    Toast.show({
+      type: "success",
+      text1: "Task Deleted",
+      text2: "Your task has been deleted successfully!",
+    });
+  }
+
   return (
     <View style={styles.container}>
       {/* Task List */}
       <FlatList
         data={tasks}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => <TaskItem task={item} theme={theme} />}
+        renderItem={({ item }) => <TaskItem task={item} theme={theme} onDelete={deleteTask} />}
         ListEmptyComponent={
           <Text style={[styles.emptyList, { color: theme.text }]}>
             No tasks available
@@ -159,6 +185,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: SPACING.large,
     paddingBottom: SPACING.large,
+    width: "90%",
   },
   emptyList: {
     fontSize: FONT_SIZES.emptyList,
