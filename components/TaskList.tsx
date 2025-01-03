@@ -82,6 +82,14 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
 
   const saveTask = () => {
     if (currentTask) {
+      if (!currentTask.title || !currentTask.description) {
+        Toast.show({
+          type: "error",
+          text1: "Missing Details",
+          text2: "Please enter title and description for the task.",
+        });
+        return;
+      }
       setTasks((prevTasks: Task[]) =>
         prevTasks.map((task) =>
           task.id === currentTask.id ? { ...currentTask } : task
@@ -150,6 +158,7 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
       text2: "Your task status has been updated successfully!",
     });
   };
+
 
   return (
     <View style={styles.container}>
