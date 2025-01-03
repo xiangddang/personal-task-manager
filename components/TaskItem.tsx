@@ -9,9 +9,15 @@ interface TaskItemProps {
   task: Task;
   theme: typeof lightTheme | typeof darkTheme;
   onDelete: (id: number) => void;
+  onPress: () => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, theme, onDelete }) => {
+const TaskItem: React.FC<TaskItemProps> = ({
+  task,
+  theme,
+  onDelete,
+  onPress,
+}) => {
   return (
     <View
       style={[
@@ -19,40 +25,41 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, theme, onDelete }) => {
         { backgroundColor: theme.cardBackground, shadowColor: theme.text },
       ]}
     >
+      <TouchableOpacity onPress={onPress} style={styles.detailsContainer}>
+        <Text style={[styles.taskTitle, { color: theme.text }]}>
+          {task.title}
+        </Text>
+        <Text style={[styles.taskDescription, { color: theme.text }]}>
+          {task.description}
+        </Text>
+        <Text
+          style={[
+            styles.taskStatus,
+            {
+              color:
+                task.status === "Completed" ? theme.completed : theme.pending,
+            },
+          ]}
+        >
+          {task.status}
+        </Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
-        style={styles.deleteIcon}
+        style={styles.deleteContainer}
         onPress={() => {
-          console.log("Delete icon pressed", task.id);
           onDelete(task.id);
         }}
       >
-        <Icon name="delete" type="material" size={30} color={theme.text} />
+        <Icon name="delete" type="material" size={32} color={theme.text} />
       </TouchableOpacity>
-
-      <Text style={[styles.taskTitle, { color: theme.text }]}>
-        {task.id}
-        {task.title}
-      </Text>
-      <Text style={[styles.taskDescription, { color: theme.text }]}>
-        {task.description}
-      </Text>
-      <Text
-        style={[
-          styles.taskStatus,
-          {
-            color:
-              task.status === "Completed" ? theme.completed : theme.pending,
-          },
-        ]}
-      >
-        {task.status}
-      </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   taskItem: {
+    flexDirection: "row",
     padding: SPACING.small,
     marginBottom: SPACING.small,
     borderRadius: 12,
@@ -65,6 +72,9 @@ const styles = StyleSheet.create({
     elevation: 4,
     position: "relative",
   },
+  detailsContainer: {
+    flex: 1,
+  },
   taskTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -76,15 +86,11 @@ const styles = StyleSheet.create({
   },
   taskStatus: {
     fontSize: 14,
-    textAlign: "right",
   },
-  deleteIcon: {
-    position: "absolute",
-    top: SPACING.small,
-    right: SPACING.small,
-    padding: SPACING.small,
-    backgroundColor: "transparent",
-    borderRadius: SPACING.large,
+  deleteContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: SPACING.large,
   },
 });
 

@@ -2,29 +2,26 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  Button,
   StyleSheet,
   FlatList,
-  TextInput,
   TouchableOpacity,
-  Modal,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
-import { COLORS, FONT_SIZES, SPACING } from "../styles/constants";
+import { FONT_SIZES, SPACING } from "../styles/constants";
 import { Task } from "../types/Task";
 import { mockTasks } from "../data/mockTasks";
 import { TaskStatus } from "../types/TaskStatus";
-import { lightTheme, darkTheme } from "../styles/theme";
+import { Theme } from "../styles/theme";
 import TaskItem from "./TaskItem";
+import TaskModal from "./TaskScreenModal";
+import AddTaskModal from "./AddTaskModal";
 
 const STORAGE_KEY = "@tasks-list";
 const MAXID_KEY = "@tasks-maxid";
 
 interface TaskListProps {
-  theme: typeof lightTheme | typeof darkTheme;
+  theme: Theme;
 }
 
 const TaskList: React.FC<TaskListProps> = ({ theme }) => {
@@ -34,20 +31,25 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
   const [newDescription, setNewDescription] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  const [taskModalVisible, setTaskModalVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
   // initial load of tasks from storage or mock data
   useEffect(() => {
     const fetchTasks = async () => {
       const storedTasks = await loadFromStorage(STORAGE_KEY);
       if (storedTasks && storedTasks.length > 0) {
         setTasks(storedTasks);
-        const storedMaxId = Math.max(...storedTasks.map((task: Task) => task.id));
+        const storedMaxId = Math.max(
+          ...storedTasks.map((task: Task) => task.id)
+        );
         setMaxId(storedMaxId);
       } else {
         setTasks(mockTasks);
         setMaxId(mockTasks.length);
         await saveToStorage(STORAGE_KEY, mockTasks);
       }
-
     };
     fetchTasks();
   }, []);
@@ -65,6 +67,36 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
     setModalVisible(false);
     setNewTitle("");
     setNewDescription("");
+  };
+
+  const openTaskModal = (task: Task) => {
+    setCurrentTask(task);
+    setTaskModalVisible(true);
+    setIsEditing(false); // default to view mode
+  };
+
+  const closeTaskModal = () => {
+    setTaskModalVisible(false);
+    setCurrentTask(null);
+  };
+
+  const saveTask = () => {
+    if (currentTask) {
+      if (!currentTask.title || !currentTask.description) {
+        Toast.show({
+          type: "error",
+          text1: "Missing Details",
+          text2: "Please enter title and description for the task.",
+        });
+        return;
+      }
+      setTasks((prevTasks: Task[]) =>
+        prevTasks.map((task) =>
+          task.id === currentTask.id ? { ...currentTask } : task
+        )
+      );
+    }
+    closeTaskModal();
   };
 
   const addTask = () => {
@@ -104,7 +136,29 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
       text1: "Task Deleted",
       text2: "Your task has been deleted successfully!",
     });
-  }
+  };
+
+  const toggleStatus = (id: number) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              status:
+                task.status === TaskStatus.Completed
+                  ? TaskStatus.Pending
+                  : TaskStatus.Completed,
+            }
+          : task
+      )
+    );
+    Toast.show({
+      type: "success",
+      text1: "Task Status Updated",
+      text2: "Your task status has been updated successfully!",
+    });
+  };
+
 
   return (
     <View style={styles.container}>
@@ -112,7 +166,14 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
       <FlatList
         data={tasks}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => <TaskItem task={item} theme={theme} onDelete={deleteTask} />}
+        renderItem={({ item }) => (
+          <TaskItem
+            task={item}
+            theme={theme}
+            onDelete={deleteTask}
+            onPress={() => openTaskModal(item)}
+          />
+        )}
         ListEmptyComponent={
           <Text style={[styles.emptyList, { color: theme.text }]}>
             No tasks available
@@ -120,6 +181,28 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
         }
         contentContainerStyle={{ paddingBottom: 80 }}
       />
+      {currentTask && taskModalVisible && (
+        <TaskModal
+          visible={taskModalVisible}
+          task={currentTask}
+          isEditing={isEditing}
+          theme={theme}
+          onClose={closeTaskModal}
+          onSave={saveTask}
+          onToggleStatus={() => {
+            toggleStatus(currentTask.id);
+            closeTaskModal();
+          }}
+          onEditToggle={() => setIsEditing(true)}
+          onChangeTitle={(text: string) =>
+            setCurrentTask({ ...currentTask, title: text })
+          }
+          onChangeDescription={(text: string) =>
+            setCurrentTask({ ...currentTask, description: text })
+          }
+        />
+      )};
+
       {/* Add Task Button */}
       <TouchableOpacity
         style={[styles.addButton, { backgroundColor: theme.completed }]}
@@ -129,53 +212,16 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
       </TouchableOpacity>
 
       {/* Add Task Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
+      {modalVisible && <AddTaskModal
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <TouchableWithoutFeedback
-          onPress={() => {
-            closeAddModal(), Keyboard.dismiss;
-          }}
-        >
-          <View style={styles.modalContainer}>
-            <View
-              style={[
-                styles.modalContent,
-                { backgroundColor: theme.cardBackground },
-              ]}
-            >
-              <Text style={[styles.modalTitle, { color: theme.text }]}>
-                Add a New Task
-              </Text>
-              <TextInput
-                style={[styles.input, { color: theme.text }]}
-                placeholder="Task Title"
-                placeholderTextColor="#aaa"
-                value={newTitle}
-                onChangeText={setNewTitle}
-              />
-              <TextInput
-                style={[styles.input, { color: theme.text }]}
-                placeholder="Task Description"
-                placeholderTextColor="#aaa"
-                value={newDescription}
-                onChangeText={setNewDescription}
-              />
-              <View style={styles.buttonRow}>
-                <Button title="Add" onPress={addTask} />
-                <Button
-                  title="Cancel"
-                  color={COLORS.pending}
-                  onPress={() => closeAddModal()}
-                />
-              </View>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+        theme={theme}
+        onClose={closeAddModal}
+        onAdd={addTask}
+        title={newTitle}
+        description={newDescription}
+        onChangeTitle={setNewTitle}
+        onChangeDescription={setNewDescription}
+      />};
     </View>
   );
 };
@@ -209,34 +255,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    padding: 20,
-    borderRadius: 8,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: SPACING.large,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: SPACING.medium,
-  },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: SPACING.small,
+  },
+  actionButton: {
+    paddingVertical: SPACING.small,
+    paddingHorizontal: SPACING.small,
+    borderRadius: SPACING.small,
+  },
+  actionButtonText: {
+    color: "#fff",
+    fontSize: FONT_SIZES.button,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
