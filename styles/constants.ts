@@ -5,6 +5,7 @@ export const COLORS = {
     description: "#666",
     completed: "green",
     pending: "red",
+    modalBackground: "rgba(0, 0, 0, 0.5)",
   };
   
   export const FONT_SIZES = {

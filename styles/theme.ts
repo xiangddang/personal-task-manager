@@ -1,4 +1,12 @@
-export const lightTheme = {
+export interface Theme {
+  background: string;
+  text: string;
+  cardBackground: string;
+  completed: string;
+  pending: string;
+}
+
+export const lightTheme: Theme = {
   background: "#ffffff",
   text: "#000000",
   cardBackground: "#f5f5f5",
@@ -6,7 +14,7 @@ export const lightTheme = {
   pending: "red",
 };
 
-export const darkTheme = {
+export const darkTheme: Theme = {
   background: "#3A3A3A",
   text: "#F5F5F5",
   cardBackground: "#1e1e1e",
