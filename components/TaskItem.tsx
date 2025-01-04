@@ -51,7 +51,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           onDelete(task.id);
         }}
       >
-        <Icon name="delete" type="material" size={32} color={theme.text} />
+        <Icon name="delete" type="material" size={32} color={theme.trash} />
       </TouchableOpacity>
     </View>
   );
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
   },
   taskStatus: {
     fontSize: 14,
+    fontWeight: "bold",
   },
   deleteContainer: {
     justifyContent: "center",
