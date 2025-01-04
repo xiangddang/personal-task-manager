@@ -1,16 +1,14 @@
 import React from "react";
 import {
-  Modal,
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
 import { COLORS, SPACING, RADIUS, FONT_SIZES } from "../styles/constants";
 import { Theme } from "../styles/theme";
+import ModalWrapper from "./ModalWrapper";
 
 interface AddTaskModalProps {
   visible: boolean;
@@ -36,73 +34,36 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
   const dynamicStyles = styles(theme);
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      {/* Dismiss the keyboard and close the modal when tapping outside the modal */}
-      <TouchableWithoutFeedback
-        onPress={() => {
-          Keyboard.dismiss();
-          onClose();
-        }}
-      >
-        <View style={dynamicStyles.modalContainer}>
-          <View style={dynamicStyles.modalContent}>
-            <Text style={dynamicStyles.modalTitle}>Add a New Task</Text>
-            <TextInput
-              style={dynamicStyles.input}
-              placeholder="Task Title"
-              placeholderTextColor={theme.placeholder}
-              value={title}
-              onChangeText={onChangeTitle}
-            />
-            <TextInput
-              style={dynamicStyles.input}
-              placeholder="Task Description"
-              placeholderTextColor={theme.placeholder}
-              value={description}
-              onChangeText={onChangeDescription}
-            />
-            <View style={dynamicStyles.buttonRow}>
-              <TouchableOpacity
-                style={dynamicStyles.actionButton}
-                onPress={onAdd}
-              >
-                <Text style={dynamicStyles.actionButtonText}>Add</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={dynamicStyles.actionButton}
-                onPress={onClose}
-              >
-                <Text style={dynamicStyles.actionButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+    <ModalWrapper visible={visible} theme={theme} onClose={onClose}>
+      <Text style={dynamicStyles.modalTitle}>Add a New Task</Text>
+      <TextInput
+        style={dynamicStyles.input}
+        placeholder="Task Title"
+        placeholderTextColor={theme.placeholder}
+        value={title}
+        onChangeText={onChangeTitle}
+      />
+      <TextInput
+        style={dynamicStyles.input}
+        placeholder="Task Description"
+        placeholderTextColor={theme.placeholder}
+        value={description}
+        onChangeText={onChangeDescription}
+      />
+      <View style={dynamicStyles.buttonRow}>
+        <TouchableOpacity style={dynamicStyles.actionButton} onPress={onAdd}>
+          <Text style={dynamicStyles.actionButtonText}>Add</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={dynamicStyles.actionButton} onPress={onClose}>
+          <Text style={dynamicStyles.actionButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    </ModalWrapper>
   );
 };
 
 const styles = (theme: Theme) =>
   StyleSheet.create({
-    modalContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: COLORS.modalBackground,
-    },
-    modalContent: {
-      width: "80%",
-      padding: SPACING.large,
-      borderRadius: RADIUS.small,
-      elevation: 5,
-      backgroundColor: theme.cardBackground,
-      color: theme.text,
-    },
     input: {
       borderWidth: 1,
       borderColor: theme.border,
@@ -131,6 +92,7 @@ const styles = (theme: Theme) =>
       fontSize: FONT_SIZES.title,
       fontWeight: "bold",
       marginBottom: SPACING.large,
+      color: theme.text,
     },
   });
 
