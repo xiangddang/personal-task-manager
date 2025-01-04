@@ -4,20 +4,35 @@ export interface Theme {
   cardBackground: string;
   completed: string;
   pending: string;
+  placeholder: string;
+  inputBackground: string;
+  dropdownBackground: string;
+  border: string;
+  trash: string;
 }
 
 export const lightTheme: Theme = {
   background: "#ffffff",
   text: "#000000",
   cardBackground: "#f5f5f5",
-  completed: "green",
-  pending: "red",
+  completed: "#004290",
+  pending: "#FE6229",
+  placeholder: "#888",
+  inputBackground: "#f9f9f9",
+  dropdownBackground: "#f9f9f9",
+  border: "#ccc",
+  trash: "rgb(169, 169, 169)"
 };
 
 export const darkTheme: Theme = {
   background: "#3A3A3A",
   text: "#F5F5F5",
   cardBackground: "#1e1e1e",
-  completed: "#66BB6A",
-  pending: "#FF6F61",
+  inputBackground: "#333",
+  dropdownBackground: "#333",
+  completed: "#004290",
+  pending: "#FD8227",
+  placeholder: "#aaa",
+  border: "#555",
+  trash: "rgb(128, 128, 128)"
 };

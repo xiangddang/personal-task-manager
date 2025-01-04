@@ -1,7 +1,14 @@
 import React from "react";
-import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from "react-native";
-import { COLORS, SPACING } from "../styles/constants";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { COLORS, SPACING, RADIUS, FONT_SIZES } from "../styles/constants";
 import { Theme } from "../styles/theme";
+import ModalWrapper from "./ModalWrapper";
 
 interface AddTaskModalProps {
   visible: boolean;
@@ -23,85 +30,70 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
   description,
   onChangeTitle,
   onChangeDescription,
-}) => (
-  <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
-    <TouchableWithoutFeedback onPress={() => {
-            Keyboard.dismiss();
-            onClose();
-        }}
-    >
-    <View style={styles.modalContainer}>
-      <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
-        <Text style={[styles.modalTitle, { color: theme.text }]}>Add a New Task</Text>
-        <TextInput
-          style={[styles.input, { color: theme.text }]}
-          placeholder="Task Title"
-          placeholderTextColor="#aaa"
-          value={title}
-          onChangeText={onChangeTitle}
-        />
-        <TextInput
-          style={[styles.input, { color: theme.text }]}
-          placeholder="Task Description"
-          placeholderTextColor="#aaa"
-          value={description}
-          onChangeText={onChangeDescription}
-        />
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.actionButton} onPress={onAdd}>
-            <Text style={styles.actionButtonText}>Add</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={onClose}>
-            <Text style={styles.actionButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-    </TouchableWithoutFeedback>
-  </Modal>
-);
+}) => {
+  const dynamicStyles = styles(theme);
 
-const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    padding: 20,
-    borderRadius: 8,
-    elevation: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: SPACING.medium,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: SPACING.small,
-  },
-  actionButton: {
-    paddingVertical: SPACING.small,
-    paddingHorizontal: SPACING.large,
-    backgroundColor: COLORS.completed,
-    borderRadius: SPACING.small,
-  },
-  actionButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: SPACING.large,
-  },
-});
+  return (
+    <ModalWrapper visible={visible} theme={theme} onClose={onClose}>
+      <Text style={dynamicStyles.modalTitle}>Add a New Task</Text>
+      <TextInput
+        style={dynamicStyles.input}
+        placeholder="Task Title"
+        placeholderTextColor={theme.placeholder}
+        value={title}
+        onChangeText={onChangeTitle}
+      />
+      <TextInput
+        style={dynamicStyles.input}
+        placeholder="Task Description"
+        placeholderTextColor={theme.placeholder}
+        value={description}
+        onChangeText={onChangeDescription}
+      />
+      <View style={dynamicStyles.buttonRow}>
+        <TouchableOpacity style={dynamicStyles.actionButton} onPress={onAdd}>
+          <Text style={dynamicStyles.actionButtonText}>Add</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={dynamicStyles.actionButton} onPress={onClose}>
+          <Text style={dynamicStyles.actionButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    </ModalWrapper>
+  );
+};
+
+const styles = (theme: Theme) =>
+  StyleSheet.create({
+    input: {
+      borderWidth: 1,
+      borderColor: theme.border,
+      borderRadius: RADIUS.small,
+      padding: SPACING.small,
+      marginBottom: SPACING.medium,
+      color: theme.text,
+    },
+    buttonRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: SPACING.small,
+    },
+    actionButton: {
+      paddingVertical: SPACING.small,
+      paddingHorizontal: SPACING.large,
+      backgroundColor: COLORS.completed,
+      borderRadius: SPACING.small,
+    },
+    actionButtonText: {
+      color: theme.text,
+      fontSize: FONT_SIZES.button,
+      fontWeight: "bold",
+    },
+    modalTitle: {
+      fontSize: FONT_SIZES.title,
+      fontWeight: "bold",
+      marginBottom: SPACING.large,
+      color: theme.text,
+    },
+  });
 
 export default AddTaskModal;

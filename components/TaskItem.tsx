@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Icon } from "react-native-elements";
-import { lightTheme, darkTheme } from "../styles/theme";
+import { Theme, lightTheme, darkTheme } from "../styles/theme";
 import { Task } from "../types/Task";
-import { SPACING } from "../styles/constants";
+import { FONT_SIZES, ICON_SIZE, RADIUS, SPACING } from "../styles/constants";
 
 interface TaskItemProps {
   task: Task;
@@ -18,23 +18,23 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onDelete,
   onPress,
 }) => {
+  const dynamicStyles = styles(theme);
+
   return (
     <View
-      style={[
-        styles.taskItem,
-        { backgroundColor: theme.cardBackground, shadowColor: theme.text },
-      ]}
+      style={
+        dynamicStyles.taskItem}
     >
-      <TouchableOpacity onPress={onPress} style={styles.detailsContainer}>
-        <Text style={[styles.taskTitle, { color: theme.text }]}>
+      <TouchableOpacity onPress={onPress} style={dynamicStyles.detailsContainer}>
+        <Text style={dynamicStyles.taskTitle}>
           {task.title}
         </Text>
-        <Text style={[styles.taskDescription, { color: theme.text }]}>
+        <Text style={dynamicStyles.taskDescription}>
           {task.description}
         </Text>
         <Text
           style={[
-            styles.taskStatus,
+            dynamicStyles.taskStatus,
             {
               color:
                 task.status === "Completed" ? theme.completed : theme.pending,
@@ -46,46 +46,50 @@ const TaskItem: React.FC<TaskItemProps> = ({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.deleteContainer}
+        style={dynamicStyles.deleteContainer}
         onPress={() => {
           onDelete(task.id);
         }}
       >
-        <Icon name="delete" type="material" size={32} color={theme.text} />
+        <Icon name="delete" type="material" size={ICON_SIZE.trash} color={theme.trash} />
       </TouchableOpacity>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const styles = (theme: Theme) => StyleSheet.create({
   taskItem: {
     flexDirection: "row",
     padding: SPACING.small,
     marginBottom: SPACING.small,
-    borderRadius: 12,
-    shadowColor: "#000",
+    borderRadius: RADIUS.medium,
+    shadowColor: theme.text,
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowRadius: 6,
-    elevation: 4,
+    shadowRadius: RADIUS.small,
+    elevation: 5,
     position: "relative",
+    backgroundColor: theme.cardBackground, 
   },
   detailsContainer: {
     flex: 1,
   },
   taskTitle: {
-    fontSize: 18,
+    fontSize: FONT_SIZES.title,
     fontWeight: "bold",
-    marginBottom: 4,
+    marginBottom: SPACING.micro,
+    color: theme.text,
   },
   taskDescription: {
-    fontSize: 14,
-    marginBottom: 4,
+    fontSize: FONT_SIZES.description,
+    marginBottom: SPACING.micro,
+    color: theme.text,
   },
   taskStatus: {
-    fontSize: 14,
+    fontSize: FONT_SIZES.status,
+    fontWeight: "bold",
   },
   deleteContainer: {
     justifyContent: "center",
