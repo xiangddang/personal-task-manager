@@ -80,7 +80,7 @@ const styles = (theme: Theme) =>
     actionButton: {
       paddingVertical: SPACING.small,
       paddingHorizontal: SPACING.large,
-      backgroundColor: COLORS.completed,
+      backgroundColor: theme.pending,
       borderRadius: SPACING.small,
     },
     actionButtonText: {

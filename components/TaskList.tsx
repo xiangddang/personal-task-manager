@@ -105,15 +105,10 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
     setNewDescription("");
   };
 
-  const openTaskModal = (task: Task) => {
-    setCurrentTask(task);
-    setTaskModalVisible(true);
-    setIsEditing(false); // default to view mode
-  };
-
   const closeTaskModal = () => {
     setTaskModalVisible(false);
     setCurrentTask(null);
+    setIsEditing(false);
   };
 
   const saveTask = () => {
@@ -221,7 +216,8 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
           placeholder="Search tasks"
           placeholderTextColor={theme.placeholder}
           value={searchQuery}
-          onChangeText={applyFilters}
+          onChangeText={(text) => {setSearchQuery(text);
+            applyFilters}}
         />
 
         <DropDownPicker

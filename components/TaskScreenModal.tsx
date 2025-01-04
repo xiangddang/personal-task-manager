@@ -134,7 +134,7 @@ const styles = (theme: Theme) =>
     actionButton: {
       paddingVertical: SPACING.small,
       paddingHorizontal: SPACING.large,
-      backgroundColor: COLORS.pending,
+      backgroundColor: theme.pending,
       borderRadius: SPACING.small,
     },
     actionButtonText: {
