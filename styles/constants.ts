@@ -3,7 +3,7 @@ export const COLORS = {
     text: "#333",
     emptyList: "#888",
     description: "#666",
-    completed: "green",
+    completed: "#FFA500",
     pending: "red",
     modalBackground: "rgba(0, 0, 0, 0.5)",
   };
