@@ -1,6 +1,6 @@
 import React from "react";
 import { Task } from "../types/Task";
-import { lightTheme, darkTheme } from "../styles/theme";
+import { lightTheme, darkTheme, Theme } from "../styles/theme";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { SPACING, COLORS } from "../styles/constants";
+import { SPACING, COLORS, FONT_SIZES, RADIUS } from "../styles/constants";
 import { TaskStatus } from "../types/TaskStatus";
 
 interface TaskModalProps {
@@ -41,82 +41,83 @@ const TaskModal: React.FC<TaskModalProps> = ({
 }) => {
   if (!task) return null;
 
+  const dynamicStyles = styles(theme);
+
   return (
     <Modal
       visible={visible}
       onRequestClose={onClose}
       animationType="slide"
       transparent
-    >
+    > 
+    {/** Dismiss the keyboard and close the modal when tapping outside the modal*/}
       <TouchableWithoutFeedback
         onPress={() => {
           Keyboard.dismiss();
           onClose();
         }}
       >
-        <View style={styles.modalContainer}>
+        <View style={dynamicStyles.modalContainer}>
           <View
-            style={[
-              styles.modalContent,
-              { backgroundColor: theme.cardBackground },
-            ]}
+            style={
+              dynamicStyles.modalContent}
           >
             {/** Edit mode */}
             {isEditing ? (
               <>
                 <TextInput
-                  style={[styles.input, { color: theme.text }]}
+                  style={dynamicStyles.input }
                   value={task.title}
                   onChangeText={onChangeTitle}
                   placeholder="Edit Title"
                 />
                 <TextInput
-                  style={[styles.input, { color: theme.text }]}
+                  style={dynamicStyles.input}
                   value={task.description}
                   onChangeText={onChangeDescription}
                   placeholder="Edit Description"
                 />
-                <View style={styles.buttonRow}>
+                <View style={dynamicStyles.buttonRow}>
                   <TouchableOpacity
-                    style={styles.actionButton}
+                    style={dynamicStyles.actionButton}
                     onPress={onSave}
                   >
-                    <Text style={styles.actionButtonText}>Save</Text>
+                    <Text style={dynamicStyles.actionButtonText}>Save</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={styles.actionButton}
+                    style={dynamicStyles.actionButton}
                     onPress={onClose}
                   >
-                    <Text style={styles.actionButtonText}>Cancel</Text>
+                    <Text style={dynamicStyles.actionButtonText}>Cancel</Text>
                   </TouchableOpacity>
                 </View>
               </>
             ) : (
               <>
                 {/** View mode */}
-                <Text style={[styles.modalTitle, { color: theme.text }]}>
+                <Text style={dynamicStyles.modalTitle}>
                   {task.title}
                 </Text>
-                <Text style={[styles.modalDescription, { color: theme.text }]}>
+                <Text style={dynamicStyles.modalDescription}>
                   {task.description}
                 </Text>
-                <Text style={[styles.modalStatus, { color: theme.text }]}>
+                <Text style={dynamicStyles.modalStatus}>
                   Status: {task.status}
                 </Text>
-                <View style={styles.buttonRow}>
+                <View style={dynamicStyles.buttonRow}>
                   <TouchableOpacity
                     style={[
-                      styles.actionButton,
+                      dynamicStyles.actionButton,
                       {
                         backgroundColor:
-                          task.status === TaskStatus.Completed
+                          task.status === TaskStatus.Pending
                             ? theme.pending
                             : theme.completed,
                       },
                     ]}
                     onPress={onToggleStatus}
                   >
-                    <Text style={styles.actionButtonText}>
+                    <Text style={dynamicStyles.actionButtonText}>
                       {task.status === "Completed"
                         ? "Mark as Pending"
                         : "Mark as Completed"}
@@ -124,13 +125,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   </TouchableOpacity>
                   {task.status === TaskStatus.Pending && (
                     <TouchableOpacity
-                      style={[
-                        styles.actionButton,
-                        { backgroundColor: theme.completed },
-                      ]}
+                      style={
+                        dynamicStyles.actionButton
+                        }
                       onPress={onEditToggle}
                     >
-                      <Text style={styles.actionButtonText}>Edit</Text>
+                      <Text style={dynamicStyles.actionButtonText}>Edit</Text>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -143,7 +143,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const styles = (theme: Theme) => StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -154,13 +154,15 @@ const styles = StyleSheet.create({
     width: "80%",
     padding: SPACING.large,
     elevation: 5,
+    backgroundColor: theme.cardBackground,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 8,
+    borderColor: theme.border,
+    borderRadius: RADIUS.small,
+    padding: SPACING.small,
     marginBottom: SPACING.medium,
+    color: theme.text,
   },
   buttonRow: {
     flexDirection: "row",
@@ -170,26 +172,29 @@ const styles = StyleSheet.create({
   actionButton: {
     paddingVertical: SPACING.small,
     paddingHorizontal: SPACING.large,
-    backgroundColor: COLORS.completed,
+    backgroundColor: COLORS.pending,
     borderRadius: SPACING.small,
   },
   actionButtonText: {
-    color: "#fff",
-    fontSize: 16,
+    color: theme.text,
+    fontSize: FONT_SIZES.button,
     fontWeight: "bold",
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: FONT_SIZES.title,
     fontWeight: "bold",
     marginBottom: SPACING.large,
+    color: theme.text,
   },
   modalDescription: {
-    fontSize: 16,
+    fontSize: FONT_SIZES.description,
     marginBottom: SPACING.small,
+    color: theme.text,
   },
   modalStatus: {
-    fontSize: 14,
+    fontSize: FONT_SIZES.status,
     marginBottom: SPACING.large,
+    color: theme.text,
   },
 });
 

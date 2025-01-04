@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
-import { FONT_SIZES, SPACING } from "../styles/constants";
+import { COLORS, FONT_SIZES, ICON_SIZE, RADIUS, SPACING } from "../styles/constants";
 import { Task } from "../types/Task";
 import { mockTasks } from "../data/mockTasks";
 import { TaskStatus } from "../types/TaskStatus";
@@ -30,20 +30,24 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
   const dynamicStyles = styles(theme);
 
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [maxId, setMaxId] = useState<number>(0);
+  const [maxId, setMaxId] = useState<number>(0); // to generate unique ids
+
+  // Add task modal
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
 
+  // show task screen modal
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [taskModalVisible, setTaskModalVisible] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // to toggle edit mode
 
+  // for search and filter
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
-
-  const [open, setOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  // filter options
   const [items, setItems] = useState([
     { label: "All", value: "All" },
     { label: "Pending", value: "Pending" },
@@ -53,35 +57,50 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
   // initial load of tasks from storage or mock data
   useEffect(() => {
     const fetchTasks = async () => {
-      const storedTasks = await loadFromStorage(STORAGE_KEY);
-      if (storedTasks && storedTasks.length > 0) {
-        setTasks(storedTasks);
-        setFilteredTasks(storedTasks);
-        const storedMaxId = Math.max(
-          ...storedTasks.map((task: Task) => task.id)
-        );
-        setMaxId(storedMaxId);
-      } else {
-        setTasks(mockTasks);
-        setMaxId(mockTasks.length);
-        await saveToStorage(STORAGE_KEY, mockTasks);
-      }
+      const storedTasks = (await loadFromStorage(STORAGE_KEY)) || [];
+      const storedMaxId = storedTasks.length
+      ? Math.max(...storedTasks.map((task: Task) => task.id))
+      : mockTasks.length;
+      setTasks(storedTasks.length ? storedTasks : mockTasks);
+      setFilteredTasks(storedTasks.length ? storedTasks : mockTasks);
+      setMaxId(storedMaxId);
     };
     fetchTasks();
   }, []);
 
-  // save tasks to storage whenever tasks change
+  // save tasks and maxId to storage whenever they change
   useEffect(() => {
     saveToStorage(STORAGE_KEY, tasks);
-    filterTasks(searchQuery, filterStatus);
-  }, [tasks]);
-
-  useEffect(() => {
     saveToStorage(MAXID_KEY, maxId);
-  }, [maxId]);
+    applyFilters();
+  }, [tasks, maxId, searchQuery, filterStatus]);
+
+  const applyFilters = () => {
+    let updatedTasks = tasks;
+
+    // filter by status
+    if (filterStatus !== "All") {
+      updatedTasks = updatedTasks.filter(
+        (task) =>
+          task.status ===
+          (filterStatus === "Pending"
+            ? TaskStatus.Pending
+            : TaskStatus.Completed)
+      );
+    }
+
+    // filter by title
+    if (searchQuery) {
+      updatedTasks = updatedTasks.filter((task) =>
+        task.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredTasks(updatedTasks);
+  };
 
   const closeAddModal = () => {
-    setModalVisible(false);
+    setAddModalVisible(false);
     setNewTitle("");
     setNewDescription("");
   };
@@ -116,13 +135,12 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
     closeTaskModal();
   };
 
-  const addTask = () => {
+  const hanldeAddTask = () => {
     // Validate the input fields
     if (!newTitle || !newDescription) {
       Toast.show({
         type: "error",
         text1: "Missing Details",
-        text2: "Please enter title and description for the task.",
       });
       return;
     }
@@ -135,58 +153,21 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
     };
 
     setTasks([...tasks, newTask]);
-    setMaxId(maxId + 1);
+    setMaxId((prev) => prev + 1);
     closeAddModal();
 
     Toast.show({
       type: "success",
       text1: "Task Added",
-      text2: "Your task has been added successfully!",
     });
   };
 
-  const deleteTask = (id: number) => {
-    console.log("deleteTask", id);
+  const handleDeleteTask = (id: number) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
     Toast.show({
       type: "success",
-      text1: "Task Deleted",
-      text2: "Your task has been deleted successfully!",
+      text1: "Task Deleted"
     });
-  };
-
-  const handleSearch = (value: string) => {
-    const query = value.toLowerCase();
-    setSearchQuery(query);
-    filterTasks(query, filterStatus);
-  };
-
-  useEffect(() => {
-    filterTasks(searchQuery, filterStatus);
-  }, [searchQuery, filterStatus]);
-
-  const filterTasks = (query: string, status: string) => {
-    let updatedTasks = tasks;
-
-    // filter by status
-    if (status === "Pending") {
-      updatedTasks = updatedTasks.filter(
-        (task) => task.status === TaskStatus.Pending
-      );
-    } else if (status === "Completed") {
-      updatedTasks = updatedTasks.filter(
-        (task) => task.status === TaskStatus.Completed
-      );
-    }
-
-    // filter by title
-    if (query) {
-      updatedTasks = updatedTasks.filter((task) =>
-        task.title.toLowerCase().includes(query)
-      );
-    }
-
-    setFilteredTasks(updatedTasks);
   };
 
   const toggleStatus = (id: number) => {
@@ -198,7 +179,7 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
               status:
                 task.status === TaskStatus.Completed
                   ? TaskStatus.Pending
-                  : TaskStatus.Completed,
+                  : TaskStatus.Completed, // based on current status, toggle
             }
           : task
       )
@@ -206,9 +187,31 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
     Toast.show({
       type: "success",
       text1: "Task Status Updated",
-      text2: "Your task status has been updated successfully!",
     });
   };
+
+  // Render the task list
+  const renderTaskList = () => (
+    <FlatList
+      data={filteredTasks}
+      keyExtractor={(item) => String(item.id)}
+      renderItem={({ item }) => (
+        <TaskItem
+          task={item}
+          theme={theme}
+          onDelete={handleDeleteTask}
+          onPress={() => {
+            setCurrentTask(item);
+            setTaskModalVisible(true);
+          }}
+        />
+      )}
+      ListEmptyComponent={
+        <Text style={dynamicStyles.emptyList}>No tasks available</Text>
+      }
+      contentContainerStyle={{ paddingBottom: 50 }}
+    />
+  );
 
   return (
     <View style={dynamicStyles.container}>
@@ -218,45 +221,29 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
           placeholder="Search tasks"
           placeholderTextColor={theme.placeholder}
           value={searchQuery}
-          onChangeText={handleSearch}
+          onChangeText={applyFilters}
         />
 
         <DropDownPicker
-          open={open}
+          open={filterOpen}
           value={filterStatus}
           items={items}
-          setOpen={setOpen}
+          setOpen={setFilterOpen}
           setValue={setFilterStatus}
           setItems={setItems}
           style={dynamicStyles.dropdown}
           dropDownContainerStyle={dynamicStyles.dropdownContainer}
           textStyle={{
             color: theme.text,
-            fontSize: 16,
+            fontSize: FONT_SIZES.dropDownText,
             fontWeight: "bold",
+          }}
+          labelStyle={{
+            fontSize: FONT_SIZES.dropDownText,
           }}
         />
       </View>
-
-      {/* Task List */}
-      <FlatList
-        data={filteredTasks}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <TaskItem
-            task={item}
-            theme={theme}
-            onDelete={deleteTask}
-            onPress={() => openTaskModal(item)}
-          />
-        )}
-        ListEmptyComponent={
-          <Text style={[dynamicStyles.emptyList, { color: theme.text }]}>
-            No tasks available
-          </Text>
-        }
-        contentContainerStyle={{ paddingBottom: 80 }}
-      />
+      {renderTaskList()}
       {/* Task Modal */}
       {currentTask && taskModalVisible && (
         <TaskModal
@@ -282,17 +269,17 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
       {/* Add Task Button */}
       <TouchableOpacity
         style={[dynamicStyles.addButton, { backgroundColor: theme.pending }]}
-        onPress={() => setModalVisible(true)}
+        onPress={() => setAddModalVisible(true)}
       >
         <Text style={dynamicStyles.addButtonText}>+</Text>
       </TouchableOpacity>
       {/* Add Task Modal */}
-      {modalVisible && (
+      {addModalVisible && (
         <AddTaskModal
-          visible={modalVisible}
+          visible={addModalVisible}
           theme={theme}
           onClose={closeAddModal}
-          onAdd={addTask}
+          onAdd={hanldeAddTask}
           title={newTitle}
           description={newDescription}
           onChangeTitle={setNewTitle}
@@ -312,7 +299,7 @@ const styles = (theme: Theme) => StyleSheet.create({
   },
   emptyList: {
     fontSize: FONT_SIZES.emptyList,
-    color: "#888",
+    color: COLORS.emptyList,
     textAlign: "center",
     marginTop: SPACING.large,
   },
@@ -322,14 +309,14 @@ const styles = (theme: Theme) => StyleSheet.create({
     right: SPACING.large,
     width: 60,
     height: 60,
-    borderRadius: 30,
+    borderRadius: RADIUS.addButton,
     justifyContent: "center",
     alignItems: "center",
     elevation: 5,
   },
   addButtonText: {
-    fontSize: 30,
-    color: "#fff",
+    fontSize: ICON_SIZE.addIcon,
+    color: theme.text,
     fontWeight: "bold",
   },
   buttonRow: {
@@ -360,7 +347,7 @@ const styles = (theme: Theme) => StyleSheet.create({
     borderColor: theme.border,
     padding: SPACING.medium,
     height: 50,
-    borderRadius: 15,
+    borderRadius: RADIUS.medium,
     backgroundColor: theme.inputBackground,
     color: theme.placeholder,
     marginRight: SPACING.medium,
@@ -370,13 +357,13 @@ const styles = (theme: Theme) => StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderColor: theme.border,
-    borderRadius: 15,
+    borderRadius: RADIUS.medium,
     backgroundColor: theme.dropdownBackground,
     color: theme.text,
   },
   dropdownContainer: {
     width: "35%",
-    marginTop: 8,
+    marginTop: SPACING.small,
     borderColor: theme.border,
     backgroundColor: theme.dropdownBackground,
     color: theme.text,
