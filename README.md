@@ -61,19 +61,21 @@ npx expo start
 
 ## Running the App
 
-iOS
+### Using a Mobile Device
 
-- Use the Expo Go app on your iOS device or the iOS simulator (e.g., iPhone SE, iPad Pro).
-```shell
-npx expo start --ios
-```
+1. Download the Expo Go app on your iOS or Android device.
+2. Scan the QR code displayed in the terminal or browser after starting the Expo server.
 
-Android
+### Using a Simulator
 
-- Use the Expo Go app on your Android device or the Android emulator (e.g., Pixel 9 Pro).
-```shell
-npx expo start --android
-```
+1. Set up the required simulator:
+    - iOS Simulator: Install Xcode on macOS.
+    - Android Emulator: Install Android Studio and configure an emulator.
+
+2. Run the app:
+    - For iOS: Press i in the terminal to launch the iOS Simulator.
+    - For Android: Press a in the terminal to launch the Android Emulator.
+
 
 ## Project Structure
 ```
