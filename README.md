@@ -78,24 +78,33 @@ npx expo start --android
 ## Project Structure
 ```
 .
+├── app
+│   ├── task
+│   │  ├── [id].tsx         # Task details and editing screen
+│   ├── _layout.tsx         # Layout wrapper for the app
+│   ├── index.tsx           # Main task list screen
 ├── components
 │   ├── TaskList.tsx        # Main task list component
 │   ├── TaskItem.tsx        # Individual task component
 │   ├── AddTaskModal.tsx    # Modal for adding tasks
-│   ├── TaskScreenModal.tsx # Modal for task details
-│   ├── ModalWrapper.tsx    # Modal for task details
+│   ├── ModalWrapper.tsx    # Modal components
+│   ├── Draggable.tsx       # Draggable components
+│   ├── FloatingSwitch.tsx  # Draggable Floating switch icon
 ├── data
 │   ├── mockTasks.ts        # Mock tasks data
+├── context
+│   ├── ThemeContext.ts     # Theme context file
 ├── styles
 │   ├── constants.ts        # Style constants (e.g., colors, spacing, fonts)
-│   ├── theme.ts            # Light and dark themes
+│   ├── theme.ts            # Theme interface, Light and dark themes
 ├── types
 │   ├── Task.ts             # Task type interface
 │   ├── TaskStatus.ts       # Enum for task status
 ├── utils
 │   ├── storage.ts          # AsyncStorage helpers
+│   ├── taskEventEmitter.ts # Task event emitter
+│   ├── taskUtils.ts        # Task-related utility functions
 ├── app.json                # Expo app config
-├── App.tsx                 # Main entry
 ├── index.ts                # Entry file for the React Native app
 ├── package.json            # Dependencies and scripts
 ├── package-lock.json       # Dependencies and scripts
