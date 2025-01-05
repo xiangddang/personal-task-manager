@@ -30,7 +30,7 @@ export const darkTheme: Theme = {
   cardBackground: "#1e1e1e",
   inputBackground: "#333",
   dropdownBackground: "#333",
-  completed: "#004290",
+  completed: "#007AFF",
   pending: "#FD8227",
   placeholder: "#aaa",
   border: "#555",

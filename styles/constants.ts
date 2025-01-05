@@ -11,6 +11,8 @@ export const COLORS = {
     status: 16,
     button: 16,
     dropDownText: 13,
+    label: 14,
+    small: 12,
   };
   
   export const SPACING = {
@@ -24,6 +26,7 @@ export const COLORS = {
     small: 8,
     medium: 12,
     large: 16,
+    modeButton: 20,
     addButton: 30,
   }
 
