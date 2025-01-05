@@ -13,7 +13,7 @@ import { COLORS, FONT_SIZES, ICON_SIZE, RADIUS, SPACING } from "../styles/consta
 import { Task } from "../types/Task";
 import { mockTasks } from "../data/mockTasks";
 import { TaskStatus } from "../types/TaskStatus";
-import { Theme } from "../styles/theme";
+import { darkTheme, Theme } from "../styles/theme";
 import TaskItem from "./TaskItem";
 import TaskModal from "./TaskScreenModal";
 import AddTaskModal from "./AddTaskModal";
@@ -204,7 +204,7 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
       ListEmptyComponent={
         <Text style={dynamicStyles.emptyList}>No tasks available</Text>
       }
-      contentContainerStyle={{ paddingBottom: 50 }}
+      contentContainerStyle={{ paddingBottom: 55 }}
     />
   );
 
@@ -312,7 +312,7 @@ const styles = (theme: Theme) => StyleSheet.create({
   },
   addButtonText: {
     fontSize: ICON_SIZE.addIcon,
-    color: theme.text,
+    color: "white",
     fontWeight: "bold",
   },
   buttonRow: {

@@ -1,10 +1,5 @@
 export const COLORS = {
-    background: "#fff",
-    text: "#333",
     emptyList: "#888",
-    description: "#666",
-    completed: "#004290",
-    pending: "#FE6229",
     modalBackground: "rgba(0, 0, 0, 0.5)",
   };
   

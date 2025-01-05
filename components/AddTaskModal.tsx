@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZES } from "../styles/constants";
+import { SPACING, RADIUS, FONT_SIZES } from "../styles/constants";
 import { Theme } from "../styles/theme";
 import ModalWrapper from "./ModalWrapper";
 
@@ -75,7 +75,7 @@ const styles = (theme: Theme) =>
     buttonRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginTop: SPACING.small,
+      marginTop: SPACING.micro,
     },
     actionButton: {
       paddingVertical: SPACING.small,

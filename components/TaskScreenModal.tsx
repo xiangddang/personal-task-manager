@@ -6,12 +6,9 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Modal,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
-import { SPACING, COLORS, FONT_SIZES, RADIUS } from "../styles/constants";
+import { SPACING, FONT_SIZES, RADIUS } from "../styles/constants";
 import { TaskStatus } from "../types/TaskStatus";
 import ModalWrapper from "./ModalWrapper";
 
@@ -129,11 +126,11 @@ const styles = (theme: Theme) =>
     buttonRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginTop: SPACING.small,
+      marginTop: SPACING.micro,
     },
     actionButton: {
       paddingVertical: SPACING.small,
-      paddingHorizontal: SPACING.large,
+      paddingHorizontal: SPACING.medium,
       backgroundColor: theme.pending,
       borderRadius: SPACING.small,
     },

@@ -25,8 +25,8 @@ export const lightTheme: Theme = {
 };
 
 export const darkTheme: Theme = {
-  background: "#3A3A3A",
-  text: "#F5F5F5",
+  background: "#121212",
+  text: "#E0E0E0",
   cardBackground: "#1e1e1e",
   inputBackground: "#333",
   dropdownBackground: "#333",
