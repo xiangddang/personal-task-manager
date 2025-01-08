@@ -8,20 +8,20 @@ import {
 } from "react-native";
 import { COLORS, SPACING, RADIUS } from "../styles/constants";
 import { Theme } from "../styles/theme";
+import { useTheme } from "../context/ThemeContext";
 
 interface ModalWrapperProps {
   visible: boolean;
-  theme: Theme;
   onClose: () => void;
   children: React.ReactNode; // children
 }
 
 const ModalWrapper: React.FC<ModalWrapperProps> = ({
   visible,
-  theme,
   onClose,
   children,
 }) => {
+  const { theme } = useTheme();
   const dynamicStyles = styles(theme);
 
   return (

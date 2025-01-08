@@ -92,6 +92,7 @@ npx expo start
 │   ├── ModalWrapper.tsx    # Modal components
 │   ├── Draggable.tsx       # Draggable components
 │   ├── FloatingSwitch.tsx  # Draggable Floating switch icon
+│   ├── ActionButton        # Action Button components for TaskDetails
 ├── data
 │   ├── mockTasks.ts        # Mock tasks data
 ├── context

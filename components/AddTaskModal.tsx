@@ -9,10 +9,10 @@ import {
 import { SPACING, RADIUS, FONT_SIZES } from "../styles/constants";
 import { Theme } from "../styles/theme";
 import ModalWrapper from "./ModalWrapper";
+import { useTheme } from "../context/ThemeContext";
 
 interface AddTaskModalProps {
   visible: boolean;
-  theme: Theme;
   onClose: () => void;
   onAdd: () => void;
   title: string;
@@ -23,7 +23,6 @@ interface AddTaskModalProps {
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({
   visible,
-  theme,
   onClose,
   onAdd,
   title,
@@ -31,10 +30,11 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
   onChangeTitle,
   onChangeDescription,
 }) => {
+  const { theme } = useTheme();
   const dynamicStyles = styles(theme);
 
   return (
-    <ModalWrapper visible={visible} theme={theme} onClose={onClose}>
+    <ModalWrapper visible={visible} onClose={onClose}>
       <Text style={dynamicStyles.modalTitle}>Add a New Task</Text>
       <TextInput
         style={dynamicStyles.input}

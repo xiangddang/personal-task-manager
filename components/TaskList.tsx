@@ -8,7 +8,7 @@ import {
   TextInput,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
+import { saveToStorage } from "../utils/storage";
 import {
   COLORS,
   FONT_SIZES,
@@ -17,7 +17,6 @@ import {
   SPACING,
 } from "../styles/constants";
 import { Task } from "../types/Task";
-import { mockTasks } from "../data/mockTasks";
 import { TaskStatus } from "../types/TaskStatus";
 import { Theme } from "../styles/theme";
 import TaskItem from "./TaskItem";
@@ -51,8 +50,9 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
   const [filterOpen, setFilterOpen] = useState(false);
+
   // filter options
-  const [items, setItems] = useState([
+  const [options, setOptions] = useState([
     { label: "All", value: "All" },
     { label: "Pending", value: "Pending" },
     { label: "Completed", value: "Completed" },
@@ -159,7 +159,6 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
       renderItem={({ item }) => (
         <TaskItem
           task={item}
-          theme={theme}
           onDelete={handleDeleteTask}
           onPress={() => {
             handleNavigateToTaskScreen(item.id);
@@ -190,10 +189,10 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
         <DropDownPicker
           open={filterOpen}
           value={filterStatus}
-          items={items}
+          items={options}
           setOpen={setFilterOpen}
           setValue={setFilterStatus}
-          setItems={setItems}
+          setItems={setOptions}
           style={dynamicStyles.dropdown}
           dropDownContainerStyle={dynamicStyles.dropdownContainer}
           textStyle={{
@@ -219,7 +218,6 @@ const TaskList: React.FC<TaskListProps> = ({ theme }) => {
       {addModalVisible && (
         <AddTaskModal
           visible={addModalVisible}
-          theme={theme}
           onClose={closeAddModal}
           onAdd={hanldeAddTask}
           title={newTitle}

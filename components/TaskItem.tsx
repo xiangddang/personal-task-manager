@@ -4,20 +4,20 @@ import { Icon } from "react-native-elements";
 import { Theme } from "../styles/theme";
 import { Task } from "../types/Task";
 import { FONT_SIZES, ICON_SIZE, RADIUS, SPACING } from "../styles/constants";
+import { useTheme } from "../context/ThemeContext";
 
 interface TaskItemProps {
   task: Task;
-  theme: Theme;
   onDelete: (id: number) => void;
   onPress: () => void;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
   task,
-  theme,
   onDelete,
   onPress,
 }) => {
+  const { theme } = useTheme();
   const dynamicStyles = styles(theme);
 
   return (

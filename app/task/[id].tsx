@@ -4,7 +4,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   TextInput,
 } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
@@ -16,6 +15,7 @@ import { Task } from "../../types/Task";
 import Toast from "react-native-toast-message";
 import { taskEventEmitter } from "../../utils/taskEventEmitter";
 import { fetchTaskById } from "../../utils/taskUtils";
+import ActionButton from "../../components/ActionButton";
 
 const TaskDetails: React.FC = () => {
   const router = useRouter();
@@ -105,15 +105,11 @@ const TaskDetails: React.FC = () => {
     return (
       <View style={dynamicStyles.container}>
         <Text style={dynamicStyles.modalTitle}>Task Not Found</Text>
-        <TouchableOpacity
+        <ActionButton
+          content="Go Back"
           onPress={() => router.back()}
-          style={[
-            dynamicStyles.actionButton,
-            { backgroundColor: theme.border },
-          ]}
-        >
-          <Text style={dynamicStyles.buttonText}>Go Back</Text>
-        </TouchableOpacity>
+          backgroundColor={theme.border}
+        />
       </View>
     );
   }
@@ -170,61 +166,41 @@ const TaskDetails: React.FC = () => {
     if (isEditing) {
       return (
         <>
-          <TouchableOpacity
-            style={[
-              dynamicStyles.actionButton,
-              { backgroundColor: theme.completed },
-            ]}
+          <ActionButton
+            content="Save"
             onPress={saveEdits}
-          >
-            <Text style={dynamicStyles.buttonText}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              dynamicStyles.actionButton,
-              { backgroundColor: theme.border },
-            ]}
+            backgroundColor={theme.completed}
+          />
+          <ActionButton
+            content="Cancel"
             onPress={() => setIsEditing(false)}
-          >
-            <Text style={dynamicStyles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
+            backgroundColor={theme.border}
+          />
         </>
       );
     }
 
     return (
       <>
-        <TouchableOpacity
-          style={[
-            dynamicStyles.actionButton,
-            { backgroundColor: theme.completed },
-          ]}
-          onPress={toggleStatus}
-        >
-          <Text style={dynamicStyles.buttonText}>
-            {currentTask.status === TaskStatus.Pending
+        <ActionButton
+          content={
+            currentTask.status === TaskStatus.Pending
               ? "Mark as Completed"
-              : "Revert to Pending"}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            dynamicStyles.actionButton,
-            { backgroundColor: theme.pending },
-          ]}
+              : "Revert to Pending"
+          }
+          onPress={toggleStatus}
+          backgroundColor={theme.completed}
+        />
+        <ActionButton
+          content="Edit"
           onPress={() => setIsEditing(true)}
-        >
-          <Text style={dynamicStyles.buttonText}>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            dynamicStyles.actionButton,
-            { backgroundColor: theme.border },
-          ]}
+          backgroundColor={theme.pending}
+        />
+        <ActionButton
+          content="Back"
           onPress={() => router.back()}
-        >
-          <Text style={dynamicStyles.buttonText}>Back</Text>
-        </TouchableOpacity>
+          backgroundColor={theme.border}
+        />
       </>
     );
   };
@@ -282,18 +258,6 @@ const styles = (theme: Theme) =>
       flexDirection: "column",
       alignItems: "center",
       width: "80%",
-    },
-    actionButton: {
-      width: "100%",
-      paddingVertical: SPACING.medium,
-      borderRadius: RADIUS.medium,
-      alignItems: "center",
-      marginBottom: SPACING.small,
-    },
-    buttonText: {
-      color: theme.text,
-      fontSize: FONT_SIZES.button,
-      fontWeight: "bold",
     },
     input: {
       borderWidth: 1,
